@@ -4,9 +4,12 @@ const BIOS_SIZE: usize = 256 * 1024; // 256kb
 const RAM_SIZE: usize = 32 * 1024; // 32kb
 const VIDEO_RAM_SIZE: usize = 96 * 1024; // 96kb
 
-struct Cpu {
+const PC_REG: usize = 15; // R15 is PC
+const REGISTERS_AMOUNT: usize = 16;
+
+pub struct Cpu {
     // R0.. R15
-    registers: [u32; 16],
+    registers: [u32; REGISTERS_AMOUNT],
     cpsr: u32, // flags
 
     rom: [u8; BIOS_SIZE],
@@ -30,4 +33,19 @@ impl Cpu {
 
         return u32::from_le_bytes(src);
     }
+
+    pub fn new() -> Self {
+        Self {
+            registers: [0; REGISTERS_AMOUNT],
+            cpsr: 0,
+            rom: [0; BIOS_SIZE],
+            ram: [0; RAM_SIZE],
+            video_ram: [0; VIDEO_RAM_SIZE],
+        }
+    }
+
+    pub fn current_opcode(&self) -> u32 {
+       self.read_u32_from_memory(self.registers[PC_REG]) 
+    }
+
 }
